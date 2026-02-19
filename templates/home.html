@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home — SecurePass</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-brand {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+
+        .avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c63ff, #a855f7);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .btn-logout {
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239,68,68,0.15);
+            border-color: rgba(239,68,68,0.3);
+            color: #fca5a5;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 77px);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .welcome-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(74, 222, 128, 0.12);
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            border-radius: 99px;
+            padding: 6px 18px;
+            color: #4ade80;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .pulse {
+            width: 8px; height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-icon { font-size: 72px; margin-bottom: 24px; animation: fadeIn 0.6s ease; }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            animation: fadeIn 0.7s ease;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #6c63ff, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 18px;
+            max-width: 500px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 720px;
+            width: 100%;
+            animation: fadeIn 0.9s ease;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px 20px;
+            transition: all 0.2s;
+        }
+
+        .info-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+        }
+
+        .info-card .icon { font-size: 32px; margin-bottom: 12px; }
+        .info-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .info-card p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% endwith %}
+
+        .flash {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: #4ade80;
+            font-size: 14px;
+            margin-bottom: 32px;
+            max-width: 500px;
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🔐 SecurePass</div>
+    <div class="nav-right">
+        <div class="nav-user">
+            <div class="avatar">{{ username[0].upper() }}</div>
+            <span>{{ username }}</span>
+        </div>
+        <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+</nav>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash">🎉 {{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="welcome-badge">
+        <div class="pulse"></div>
+        Account Active
+    </div>
+
+    <div class="hero-icon">🏠</div>
+    <h1>Welcome back, <span>{{ username }}</span>!</h1>
+    <p class="subtitle">You've successfully registered and logged in. Your account is secure and ready to use.</p>
+
+    <div class="cards">
+        <div class="info-card">
+            <div class="icon">🛡️</div>
+            <h3>Password Hashed</h3>
+            <p>Your password is stored using bcrypt hashing — not in plain text.</p>
+        </div>
+        <div class="info-card">
+            <div class="icon">🗄️</div>
+            <h3>SQLite Storage</h3>
+            <p>Your credentials are securely stored in a local <code>passwords.db</code> file.</p>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
