@@ -1,336 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="register.css" rel="stylesheet">
-        <title>Register — SecurePass</title>
-        <style> 
-            * { box-sizing: border-box; margin: 0; padding: 0; }
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PassGuard — Password Strength Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
 
-            body {
-                min-height: 100vh;
-                background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                padding: 20px;
-            }
-            .card {
-                background: rgba(255,255,255,0.05);
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 24px;
-                padding: 48px 44px;
-                width: 100%;
-                max-width: 480px;
-                box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-            }
-            .logo {
-                text-align: center;
-                margin-bottom: 32px;
-            }
-            .logo-icon {
-                font-size: 48px;
-                margin-bottom: 8px;
-            }
-            h1 {
-                color: #fff;
-                font-size: 28px;
-                font-weight: 700;
-                text-align: center;
-                margin-bottom: 6px;
-            }
-            .subtitle {
-                color: rgba(255,255,255,0.5);
-                text-align: center;
-                font-size: 14px;
-                margin-bottom: 36px;
-            }
-            .form-group {
-                margin-bottom: 20px;
-            }
-            label {
-                display: block;
-                color: rgba(255,255,255,0.7);
-                font-size: 13px;
-                font-weight: 600;
-                margin-bottom: 8px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            .input-wrap {
-                position: relative;
-            }
-            input[type="text"], input[type="password"] {
-                width: 100%;
-                padding: 14px 16px 14px 44px;
-                background: rgba(255,255,255,0.07);
-                border: 1px solid rgba(255,255,255,0.12);
-                border-radius: 12px;
-                color: #fff;
-                font-size: 15px;
-                transition: all 0.2s;
-                outline: none;
-            }
-            input[type="text"]:focus, input[type="password"]:focus {
-                border-color: #6c63ff;
-                background: rgba(108, 99, 255, 0.1);
-                box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
-            }
-            input::placeholder { color: rgba(255,255,255,0.3); }
-            .input-icon {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 16px;
-                pointer-events: none;
-            }
-            .toggle-pw {
-                position: absolute;
-                right: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: none;
-                border: none;
-                color: rgba(255,255,255,0.4);
-                cursor: pointer;
-                font-size: 14px;
-                transition: color 0.2s;
-            }
-            .toggle-pw:hover { color: rgba(255,255,255,0.8); }
-            /* Live validation checklist */
-            .pw-checklist {
-                margin-top: 12px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .check-item {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                font-size: 12px;
-                color: rgba(255,255,255,0.4);
-                transition: color 0.2s;
-            }
-            .check-item.pass { color: #4ade80; }
-            .check-item.fail { color: rgba(255,255,255,0.4); }
-            .check-dot {
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                border: 1px solid rgba(255,255,255,0.2);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 10px;
-                flex-shrink: 0;
-                transition: all 0.2s;
-            }
-            .check-item.pass .check-dot {
-                background: #4ade80;
-                border-color: #4ade80;
-                color: #000;
-            }
-            /* Strength bar */
-            .strength-bar-wrap {
-                margin-top: 14px;
-            }
-            .strength-label {
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-                color: rgba(255,255,255,0.4);
-                margin-bottom: 6px;
-            }
-            .strength-label span:last-child { font-weight: 600; }
-            .strength-bar {
-                height: 4px;
-                background: rgba(255,255,255,0.1);
-                border-radius: 99px;
-                overflow: hidden;
-            }
-            .strength-fill {
-                height: 100%;
-                border-radius: 99px;
-                transition: width 0.4s, background 0.4s;
-                width: 0%;
-            }
-            /* Server errors */
-            .errors {
-                background: rgba(239, 68, 68, 0.12);
-                border: 1px solid rgba(239, 68, 68, 0.3);
-                border-radius: 12px;
-                padding: 14px 16px;
-                margin-bottom: 24px;
-            }
-            .errors p {
-                color: #fca5a5;
-                font-size: 13px;
-                margin-bottom: 4px;
-            }
-            .errors p:last-child { margin-bottom: 0; }
-            .errors p::before { content: '⚠ '; }
-            .btn {
-                width: 100%;
-                padding: 15px;
-                background: linear-gradient(135deg, #6c63ff, #a855f7);
-                border: none;
-                border-radius: 12px;
-                color: #fff;
-                font-size: 16px;
-                font-weight: 700;
-                cursor: pointer;
-                margin-top: 8px;
-                transition: all 0.2s;
-                letter-spacing: 0.3px;
-            }
-            .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(108, 99, 255, 0.45); }
-            .btn:active { transform: translateY(0); }
-            .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-            .divider {
-                text-align: center;
-                color: rgba(255,255,255,0.3);
-                font-size: 13px;
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-    <div class="card">
+    <div class="glow-orb"></div>
+    <div class="glow-orb2"></div>
+
+    <!-- Header -->
+    <div class="header">
         <div class="logo">
             <div class="logo-icon">🔐</div>
-            <h1>Create Account</h1>
-            <p class="subtitle">Register to get started with SecurePass</p>
+            <span class="logo-text">PassGuard</span>
         </div>
-
-        {% if errors %}
-        <div class="errors">
-            {% for e in errors %}
-            <p>{{ e }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <form method="POST" action="/register" id="regForm" novalidate>
-
-            <div class="form-group">
-                <label>Username</label>
-                <div class="input-wrap">
-                    <span class="input-icon">👤</span>
-                    <input type="text" name="username" id="username" placeholder="Choose a username"
-                        value="{{ username }}" autocomplete="username" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <div class="input-wrap">
-                    <span class="input-icon">🔑</span>
-                    <input type="password" name="password" id="password" placeholder="Create a strong password"
-                        autocomplete="new-password" required>
-                    <button type="button" class="toggle-pw" onclick="togglePw('password', this)">Show</button>
-                </div>
-
-                <div class="pw-checklist">
-                    <div class="check-item" id="c-length"><div class="check-dot">✓</div> Min 8 characters</div>
-                    <div class="check-item" id="c-lower"><div class="check-dot">✓</div> Lowercase letter</div>
-                    <div class="check-item" id="c-upper"><div class="check-dot">✓</div> Uppercase letter</div>
-                    <div class="check-item" id="c-digit"><div class="check-dot">✓</div> One digit</div>
-                    <div class="check-item" id="c-special"><div class="check-dot">✓</div> Special character</div>
-                    <div class="check-item" id="c-consec"><div class="check-dot">✓</div> No 2 same in a row</div>
-                </div>
-
-                <div class="strength-bar-wrap">
-                    <div class="strength-label">
-                        <span>Password Strength</span>
-                        <span id="strength-text">—</span>
-                    </div>
-                    <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <div class="input-wrap">
-                    <span class="input-icon">✅</span>
-                    <input type="password" name="confirm_password" id="confirm_password"
-                        placeholder="Re-enter your password" autocomplete="new-password" required>
-                    <button type="button" class="toggle-pw" onclick="togglePw('confirm_password', this)">Show</button>
-                </div>
-            </div>
-
-            <button type="submit" class="btn" id="submitBtn" disabled>Create Account →</button>
-        </form>
-
-        <div class="divider" style="margin-top:20px; color:rgba(255,255,255,0.35); font-size:14px; text-align:center;">Already have an account? <a href="/login" style="color:#a78bfa; font-weight:600; text-decoration:none;">Sign in</a></div>
+        <p class="tagline">Real-time Password Security Analysis</p>
     </div>
 
-    <script>
-        const pwInput = document.getElementById('password');
-        const confirmInput = document.getElementById('confirm_password');
-        const submitBtn = document.getElementById('submitBtn');
+    <!-- Two-column layout -->
+    <div class="layout">
 
-        const checks = {
-            length:  { el: document.getElementById('c-length'),  test: p => p.length >= 8 },
-            lower:   { el: document.getElementById('c-lower'),   test: p => /[a-z]/.test(p) },
-            upper:   { el: document.getElementById('c-upper'),   test: p => /[A-Z]/.test(p) },
-            digit:   { el: document.getElementById('c-digit'),   test: p => /\d/.test(p) },
-            special: { el: document.getElementById('c-special'), test: p => /[!@#$%^&*(),.?":{}|<>_\-\[\]\\\/`~+=;']/.test(p) },
-            consec:  { el: document.getElementById('c-consec'),  test: p => {
-                for (let i = 0; i < p.length - 1; i++) if (p[i] === p[i+1]) return false;
-                return p.length > 0;
-            }}
-        };
+        <!-- LEFT: Input panel -->
+        <div class="panel panel-left">
+            <div class="section-label">// Analyze Your Password</div>
 
-        function togglePw(id, btn) {
-            const el = document.getElementById(id);
-            if (el.type === 'password') { el.type = 'text'; btn.textContent = 'Hide'; }
-            else { el.type = 'password'; btn.textContent = 'Show'; }
-        }
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-wrap">
+                    <input type="text" id="username" placeholder="Enter username..." autocomplete="off"/>
+                </div>
+            </div>
 
-        function evaluate() {
-            const pw = pwInput.value;
-            let passed = 0;
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrap">
+                    <input type="password" id="password" placeholder="Enter password to analyze..." autocomplete="off"/>
+                    <button class="toggle-btn" id="toggleBtn" type="button" title="Toggle visibility">👁</button>
+                </div>
+            </div>
 
-            for (const [key, obj] of Object.entries(checks)) {
-                const ok = obj.test(pw);
-                obj.el.classList.toggle('pass', ok);
-                obj.el.classList.toggle('fail', !ok);
-                if (ok) passed++;
-            }
+            <!-- Strength meter -->
+            <div class="strength-meter" id="strengthMeter">
+                <div class="meter-header">
+                    <span class="strength-label" id="strengthLabel">—</span>
+                    <span class="strength-score" id="strengthScore"></span>
+                </div>
+                <div class="meter-bar-bg">
+                    <div class="meter-bar" id="meterBar"></div>
+                </div>
+            </div>
 
-            // Strength bar
-            const fill = document.getElementById('strength-fill');
-            const text = document.getElementById('strength-text');
-            const pct = (passed / 6) * 100;
-            fill.style.width = pct + '%';
+            <div class="divider"></div>
 
-            const levels = [
-                { pct: 0,  color: '#ef4444', label: 'Very Weak' },
-                { pct: 34, color: '#f97316', label: 'Weak' },
-                { pct: 50, color: '#eab308', label: 'Fair' },
-                { pct: 67, color: '#84cc16', label: 'Good' },
-                { pct: 84, color: '#22c55e', label: 'Strong' },
-                { pct: 100,color: '#4ade80', label: 'Very Strong' },
-            ];
-            const lvl = [...levels].reverse().find(l => pct >= l.pct) || levels[0];
-            fill.style.background = lvl.color;
-            text.style.color = lvl.color;
-            text.textContent = pw.length ? lvl.label : '—';
+            <div class="section-label">// Register Account</div>
+            <button class="btn btn-primary" id="registerBtn" disabled>Create Account</button>
 
-            const allPass = passed === 6;
-            const confirmOk = confirmInput.value === pw && pw.length > 0;
-            const userOk = document.getElementById('username').value.trim().length >= 3;
-            submitBtn.disabled = !(allPass && confirmOk && userOk);
-        }
+            <div class="privacy-note">
+                <span class="privacy-dot"></span>
+                Passwords never stored in plaintext · SHA-256 hashed
+            </div>
+        </div>
 
-        pwInput.addEventListener('input', evaluate);
-        confirmInput.addEventListener('input', evaluate);
-        document.getElementById('username').addEventListener('input', evaluate);
-    </script>
-    </body>
+        <!-- RIGHT: Analysis panel -->
+        <div class="panel panel-right" id="rightPanel">
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">🔍</div>
+                <p class="empty-text">Start typing a password to see your security analysis</p>
+            </div>
+
+            <!-- Shield indicator -->
+            <div class="shield-indicator" id="shieldIndicator">
+                <span class="shield-icon" id="shieldIcon">🛡️</span>
+                <span class="shield-label" id="shieldLabel"></span>
+            </div>
+
+            <!-- Crack time -->
+            <div class="crack-time-box" id="crackBox">
+                <div class="crack-time-label">⏱ Estimated Crack Time</div>
+                <div class="crack-time-value" id="crackTime">—</div>
+                <div class="crack-time-sub">at 10 billion guesses per second (GPU cluster)</div>
+            </div>
+
+            <!-- Requirement checks -->
+            <div class="checks-section" id="checksSection">
+                <div class="section-label">// Requirements</div>
+                <div class="checks-grid" id="checksGrid">
+                    <div class="check-item" id="check-length">
+                        <div class="check-dot"></div><span>8+ characters</span>
+                    </div>
+                    <div class="check-item" id="check-lowercase">
+                        <div class="check-dot"></div><span>Lowercase</span>
+                    </div>
+                    <div class="check-item" id="check-uppercase">
+                        <div class="check-dot"></div><span>Uppercase</span>
+                    </div>
+                    <div class="check-item" id="check-digit">
+                        <div class="check-dot"></div><span>Number</span>
+                    </div>
+                    <div class="check-item" id="check-special">
+                        <div class="check-dot"></div><span>Special char</span>
+                    </div>
+                    <div class="check-item" id="check-no_consecutive">
+                        <div class="check-dot"></div><span>No repeats</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestions -->
+            <div class="suggestions" id="suggestionsBox">
+                <div class="section-label">// Improvement Tips</div>
+                <div id="suggestionsList"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
 </html>
